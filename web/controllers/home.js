@@ -13,11 +13,21 @@ home = {
         E:'E'+i
       })
     }
-    //sorting without filter will cause error
-    $('#sample-homepage').ggrid({
-      dataSource: sample,
-      fieldSortability: ['A','B','C','D','E'],
-      fieldFilterability: []
+
+    var yql = 'select * from geo.countries';
+    $.ajax({
+      url: 'http://query.yahooapis.com/v1/public/yql?q='+encodeURIComponent(yql)+'&format=json',
+      dataType: 'json',
+      success: function(data){
+        var dataSource = data.query.results.place
+        $('#sample-homepage').ggrid({
+          dataSource: dataSource,
+          fieldSortability: ['name'],
+          fieldFilterability: [],
+          fieldOrder: ['name', 'woeid'],
+          fieldInvisible: ['placeTypeName']
+        })
+      }
     })
   }
 }
