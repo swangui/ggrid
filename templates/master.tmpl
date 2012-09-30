@@ -1,0 +1,25 @@
+<html>
+<head>
+<title>ggrid - a jquery-based datagrid</title>
+<link rel="stylesheet" type="text/css" href="/web/stylesheets/default.css">
+<link rel="stylesheet" type="text/css" href="/web/stylesheets/ggrid.css">
+
+<script src="/web/lib/jquery-1.8.2.min.js" type="text/javascript" ></script>
+<script src="/web/lib/jquery-ui-1.8.24.custom.min.js" type="text/javascript" ></script>
+<script src="/web/lib/jquery.mousewheel.js" type="text/javascript" ></script>
+<script src="/web/lib/utils.js" type="text/javascript" ></script>
+<script src="/web/lib/ggrid.js" type="text/javascript" ></script>
+
+<script src="/web/controllers/home.js" type="text/javascript" ></script>
+<script>
+$(function(){
+  home.init();
+  home.homepage();
+})
+</script>
+</head>
+<body>
+<h1>ggrid project</h1>
+<%include file="${path}"/>
+</body>
+</html>

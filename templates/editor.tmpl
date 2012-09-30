@@ -1,0 +1,12 @@
+<form method="post">
+<select name="file">
+  <option value="">Change file</option>
+% for a in files:
+  <option value="${a}">${a}</option>
+% endfor
+</select>
+<input type="submit" value="Open" />
+<input type="text" style="width:100%" value="${file}" />
+<br />
+<textarea name="source" style="width:100%; height:500px; ">${source}</textarea>
+</form>

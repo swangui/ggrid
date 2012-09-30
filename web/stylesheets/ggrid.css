@@ -1,0 +1,15 @@
+.ggrid-pagination-indicator { background:#333; color:#fff; -moz-border-radius:5px; border-radius:5px; }
+
+.ggrid { font:normal 11px arial; background:#ccc; border-spacing:1px; }
+.ggrid th { background:#eee; }
+.ggrid th .ggrid-field-panel { position:relative; width:auto; background:#fefefe !important; border:1px solid #bbb; text-align:left; font-weight:normal; border-radius:1px; -moz-border-radius:1px; -moz-box-shadow:0 0 1px #666; -webkit-box-shadow:0 0 1px #666; box-shadow:0 0 1px #666; display:none; }
+.ggrid td { background:#fff; }
+
+.ggrid .ggrid-field-indicator { position:relative; float:right; border:1px solid #666; border-top:1px solid #fff; border-left:1px solid #fff; overflow:hidden; width:9px; height:9px; margin-bottom:-9px; ^width:11px; ^height:11px; ^margin-bottom:-11px; }
+.ggrid .ggrid-field-indicator-sorting { background:url(/web/images/ggrid-sprite.png) #ccc 1px 0 no-repeat; }
+.ggrid .ggrid-field-sorting-asc { background-position:-6px 0; }
+.ggrid .ggrid-field-sorting-desc { background-position:-13px 0; }
+.ggrid .ggrid-field-indicator-filtering { background:url(/web/images/ggrid-sprite.png) #ccc 1px -8px no-repeat; }
+.ggrid .ggrid-field-filter-enabled { background-position:-6px -8px; }
+.ggrid .ggrid-field-filter-disabled { background-position:-13px -8px; }
+
