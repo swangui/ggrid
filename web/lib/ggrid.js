@@ -1,3 +1,7 @@
+/*! Copyright (c) 2012 Samuel Wang (http://gogosam.com)
+ * Licensed under the MIT License (LICENSE.txt).
+ */
+
 (function($) {
   $.widget('ui.ggrid', {
     options: {
