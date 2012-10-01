@@ -1,4 +1,6 @@
 # merge onmousewheel and utils into one dependency file
+# refactor utilities
+
 # column manager fix
 # add license
 # write doc

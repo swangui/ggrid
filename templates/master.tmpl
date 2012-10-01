@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>ggrid - a jquery-based datagrid</title>
+<title>ggrid - An easy, fast and powerful jquery-based datagrid</title>
 <link rel="stylesheet" type="text/css" href="/web/stylesheets/default.css">
 <link rel="stylesheet" type="text/css" href="/web/stylesheets/ggrid.css">
 
@@ -19,7 +19,14 @@ $(function(){
 </script>
 </head>
 <body>
-<h1>ggrid project</h1>
-<%include file="${path}"/>
+<div class="wrap">
+  <div class="header">
+    <h1>ggrid project</h1>
+    <p>An easy, fast and powerful jquery-based datagrid</p>
+  </div>
+  <%include file="${path}"/>
+  
+  <p class="disclaimer">Disclaimer: This opensource project is under development and the author doesn't attempt to make any commercial profit or disclose any confidential of your business. To contact author, please write to dev.swang@gmail.com</p>
+</div>
 </body>
 </html>
