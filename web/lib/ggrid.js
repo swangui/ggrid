@@ -681,7 +681,7 @@
       var className = this.options.className;
       var container = $(this.options.container);
       
-      html.push( '<div><table class="ggrid '+className+'"><thead>' );
+      html.push( '<div style="width:10000px;"><table class="ggrid '+className+'"><thead>' );
       html.push( this._renderFields() );
       html.push( '</thead><tbody></tbody></table></div>' );
       html = html.join('');
