@@ -911,6 +911,11 @@
       var tbody = container.find('tbody');
       return tbody.find('tr');
     },
+    _getTr: function(){
+      var container = $(this.options.container);
+      var table = container.find('table');
+      return table.find('tr');
+    },
     _renderRows: function(data){
       var fields = this.options.fields;
       var fieldVisibility = this.options.fieldVisibility;
@@ -1119,10 +1124,10 @@
       this.resize();
     },
     _clearBorders: function(){
-      var rows = this._getRowsWithPlaceholders();
-          rows.find('td:first').css('border-left','none');
-          rows.find('td:last').css('border-right','none');
-          rows.filter(':first').find('td').css('border-top','none');
+      var rows = this._getTr();
+          rows.find('td:first, th:first').css('border-left','none');
+          rows.find('td:last, th:last').css('border-right','none');
+          rows.filter(':first').find('td, th').css('border-top','none');
           //rows.filter(':last').find('td').css('border-bottom','none');
     },
     resize: function(){
@@ -1169,6 +1174,9 @@
     },
     _init: function(){
       this.options.container = typeof this.options.container == 'undefined' ? this.element : this.options.container;
+      $(this.options.container).css({
+        padding: 0
+      });
       this.options.dataSourceBackup = $.extend(true, [], this.options.dataSource);
       
       
