@@ -9,11 +9,9 @@
 
       style: {
         'row-height': 20,
-        'min-height': 500,
-        'height': 400,
-        'scrollbar-y-width': 18,
-        'scrollbar-y-border-right': '1px solid #ccc',
-        'scrollbar-x-height': 18
+        'min-height': 100,
+        'height': 100,
+        'scrollbar-y-border-right': '1px solid #ccc'
       },
       
 
@@ -873,8 +871,9 @@
       var style = this.options.style;
       var rowHeight = style['row-height'];
       var tbodyHeight = container.height() - thead.height();
+      var scrollbarXHeight = $getScrollbarWidth();
       var itemCountPerPage = this.options.itemCountPerPage;
-          itemCountPerPage = parseInt(tbodyHeight/rowHeight);
+          itemCountPerPage = parseInt((tbodyHeight-scrollbarXHeight)/rowHeight);
       var totalPageNumber = dataLength % itemCountPerPage == 0 ? (dataLength / itemCountPerPage) : parseInt(dataLength / itemCountPerPage)+1;
       this.dataLength = dataLength;
       this.options.itemCountPerPage = itemCountPerPage;
@@ -906,6 +905,11 @@
       var container = $(this.options.container);
       var tbody = container.find('tbody');
       return tbody.find('tr[isplaceholder!=true]');
+    },
+    _getRowsWithPlaceholders: function(){
+      var container = $(this.options.container);
+      var tbody = container.find('tbody');
+      return tbody.find('tr');
     },
     _renderRows: function(data){
       var fields = this.options.fields;
@@ -996,8 +1000,9 @@
       var thead = container.find('thead');
       var tbody = container.find('tbody');
       var tbodyHeight = container.height() - thead.height();
-      var scrollbarXHeight = style['scrollbar-x-height'];
+      var scrollbarXHeight = $getScrollbarWidth();
       var scrollbarYHeight = tbodyHeight - scrollbarXHeight;
+      var scrollbarYWidth = scrollbarXHeight;
       var scrollbarXContainer = container.find('div:first').css({
         height: style['height'],
         'overflow-x': 'auto',
@@ -1005,7 +1010,7 @@
       })
       var scrollbarYContainer = $('<div></div>').insertAfter(scrollbarXContainer).css({
         float: 'right',
-        width: style['scrollbar-y-width'],
+        width: scrollbarYWidth,
         height: scrollbarYHeight,
         'overflow-x': 'hidden',
         'overflow-y': 'auto',
@@ -1062,11 +1067,7 @@
       if ( _this.lastVisitedPage != _this.options.currentPage ){
         clearTimeout( _this.timerPagination );
         _this.timerPagination = setTimeout(function(){
-          _this._reloadData();
-          _this.options.onPageChange();
-          var container = $(_this.options.container);
-          container.width(container.width());
-          _this.resize();
+          _this._onPaginationChange();
         }, 100);
       }
     },
@@ -1086,11 +1087,7 @@
         _this._displayPageNumber();
         if ( _this.lastVisitedPage != _this.options.currentPage ){
           _this.timerPagination = setTimeout(function(){
-            _this._reloadData();
-            _this.options.onPageChange();
-            var container = $(_this.options.container);
-            container.width(container.width());
-            _this.resize();
+            _this._onPaginationChange();
           }, 100);
         }
       }
@@ -1109,15 +1106,24 @@
       _this._displayPageNumber();
       if ( _this.lastVisitedPage != _this.options.currentPage ){
         _this.timerPagination = setTimeout(function(){
-          _this._reloadData();
-          _this.options.onPageChange();
-          var container = $(_this.options.container);
-          container.width(container.width());
-          _this.resize();
+          _this._onPaginationChange();
           _this.isMouseWheeling = false;
         }, 100);
       }
       _this._setScrollbarYTop();
+    },
+    _onPaginationChange: function(){
+      this._reloadData();
+      this.options.onPageChange();
+      this._clearBorders();
+      this.resize();
+    },
+    _clearBorders: function(){
+      var rows = this._getRowsWithPlaceholders();
+          rows.find('td:first').css('border-left','none');
+          rows.find('td:last').css('border-right','none');
+          rows.filter(':first').find('td').css('border-top','none');
+          //rows.filter(':last').find('td').css('border-bottom','none');
     },
     resize: function(){
       this._resize.call(this, {data:{_this:this}});
@@ -1134,14 +1140,14 @@
       var style = _this.options.style;
       var scrollbarXContainer = _this.scrollbarXContainer;
       var scrollbarYContainer = _this.scrollbarYContainer;
-      
+      var scrlllbarYWidth = $getScrollbarWidth();
       var scrollLeft = scrollbarXContainer.scrollLeft();
       table.css({width:'auto', opacity:0});
       scrollbarXContainer.width(10000);
       setTimeout(function(){
         table.width(table.width()+1);
         scrollbarXContainer.hide();
-        var containerWidth = parent.width() - style['scrollbar-y-width']; 
+        var containerWidth = parent.width() - scrlllbarYWidth; 
         if(table.width() < containerWidth){
           table.width(containerWidth);
         }
@@ -1173,6 +1179,7 @@
       this._renderTableBody();
       this._renderTableFooters();
       this._autoResize();
+      this._clearBorders();
       this._installFieldEnhancement();
       this._onComplete();
       

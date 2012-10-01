@@ -25,7 +25,10 @@ home = {
           fieldSortability: ['name'],
           fieldFilterability: [],
           fieldOrder: ['name', 'woeid'],
-          fieldInvisible: ['placeTypeName']
+          fieldInvisible: ['placeTypeName'],
+          style:{
+            height: 400
+          }
         })
       }
     })
