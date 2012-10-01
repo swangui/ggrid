@@ -1139,7 +1139,7 @@
       table.css({width:'auto', opacity:0});
       scrollbarXContainer.width(10000);
       setTimeout(function(){
-        table.width(table.width());
+        table.width(table.width()+1);
         scrollbarXContainer.hide();
         var containerWidth = parent.width() - style['scrollbar-y-width']; 
         if(table.width() < containerWidth){
