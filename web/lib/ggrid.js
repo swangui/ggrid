@@ -1107,11 +1107,11 @@
       clearTimeout( _this.timerPagination );
       
       var currentPage = _this.options.currentPage;
-      currentPage -= delta;
-      currentPage = currentPage <= 0 ? 1 : currentPage;
+      currentPage -= parseInt(delta);
       currentPage = currentPage >= _this.options.totalPageNumber ? _this.options.totalPageNumber : currentPage;
+      currentPage = currentPage <= 0 ? 1 : currentPage;
       _this.isMouseWheeling = true;
-      _this.options.currentPage = parseInt(currentPage);
+      _this.options.currentPage = currentPage;
       _this._displayPageNumber();
       if ( _this.lastVisitedPage != _this.options.currentPage ){
         _this.timerPagination = setTimeout(function(){
