@@ -17,3 +17,13 @@ table {font-size:2em; padding:5px; margin:5px; position:absolute; }
 .ggrid .ggrid-field-filter-enabled { background-position:-6px -8px; }
 .ggrid .ggrid-field-filter-disabled { background-position:-13px -8px; }
 
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0,0,0,.5);
+  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
