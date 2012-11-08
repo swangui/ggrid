@@ -4,7 +4,13 @@ table {font-size:2em; padding:5px; margin:5px; position:absolute; }
 
 .ggrid { font:normal 11px arial; border-spacing:0; padding:0; margin:0; position:static; border-collapse:collapse; }
 .ggrid th { background:#eee; }
-.ggrid th .ggrid-field-panel { position:relative; width:auto; background:#fefefe !important; border:1px solid #bbb; text-align:left; font-weight:normal; border-radius:1px; -moz-border-radius:1px; -moz-box-shadow:0 0 1px #666; -webkit-box-shadow:0 0 1px #666; box-shadow:0 0 1px #666; display:none; }
+.ggrid th .zxgrid-field-panel { position:relative; width:auto; text-align:left; font-weight:normal; display:none; }
+.ggrid th .zxgrid-field-panel-options { position:absolute; border:1px solid #ccc; border-radius:3px; -moz-border-radius:3px; -moz-box-shadow:0px 0px 3px #333; -webkit-box-shadow:0px 0px 3px #333; box-shadow:0px 0px 3px #333; background:#fefefe !important; padding-bottom:3px; padding-right:3px; }
+.ggrid th .zxgrid-field-panel-condition { position:absolute; border:1px solid #ccc; border-radius:3px; -moz-border-radius:3px; -moz-box-shadow:0px 0px 3px #333; -webkit-box-shadow:0px 0px 3px #333; box-shadow:0px 0px 3px #333; background:#fefefe !important; padding-bottom:3px; padding-right:3px; }
+.ggrid th .zxgrid-field-panel-condition input,
+.ggrid th .zxgrid-field-panel-condition button,
+.ggrid th .zxgrid-field-panel-condition select { margin:3px 0 0 3px; font-size:11px; width:70px; }
+
 .ggrid td { background:#fff; }
 .ggrid td,
 .ggrid th { border:1px solid #ccc; }
