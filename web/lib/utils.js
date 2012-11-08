@@ -376,12 +376,18 @@
     query.where = function(condition){
       condition = condition.replace(/OR/g, '||');
       condition = condition.replace(/AND/g, '&&');
+      //NOT LIKE statement
+      condition = condition.replace(/([a-zA-Z_]+)(\sNOT\sLIKE\s)("%)([^%]*)(%")/g, 'el[\'$1\'].toString().indexOf(\'$4\') == -1');
+      //LIKE statement
+      condition = condition.replace(/([a-zA-Z_]+)(\sLIKE\s)("%)([^%]*)(%")/g, 'el[\'$1\'].toString().indexOf(\'$4\') > -1');
       condition = condition.replace(/(\s|(".*?"))/g, '$2');
       condition = condition.replace(/(\b[a-zA-Z_]+\b)([<>=!]{1,2})/g, 'el[\'$1\']$2');
       
+      
+      condition = condition == '()' ? '(true)' : condition;
       query.condition = condition;
       var statement = '$.map(query.table, function(el, index){if('+query.condition+'){ return el }})'; //alert(statement)
-      
+      alert(statement);
       query.table = eval(statement);
       query.result = query.table;
       return query;
@@ -409,12 +415,25 @@
     return sql(field);
   }
 
+  $qsort_process = function(arr, i, params){
+    var pivot = params.pivot;
+    var key = params.key;
+    var left = params.left;
+    var right = params.right;
+    if(!arr)return
+    if (arr[key] < pivot[key]) {
+      left.push(arr);
+    } else {
+      right.push(arr);
+    }
+  }
   $qsort = function(arr, key){
     if (arr.length <= 1) { return arr; }
     var pivotIndex = Math.floor(arr.length / 2);
     var pivot = arr.splice(pivotIndex, 1)[0];
     var left = [];
     var right = [];
+    /*
     for (var i = 0; i < arr.length; i++){
       if ($if_make_date(arr[i][key]) < $if_make_date(pivot[key])) {
         left.push(arr[i]);
@@ -422,24 +441,9 @@
         right.push(arr[i]);
       }
     }
+    //*/
+    $fastloop(arr, $qsort_process, {key:key, pivot:pivot, left:left, right:right});
     return $qsort(left, key).concat(pivot, $qsort(right, key));
-  }
-  $if_make_date = function(str){
-    /*
-    if(/\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}/.test(str)){
-      var d = str.split(' ');
-      d = d[0].split('-').concat(d[1].split(':'));
-      var year = d[0];
-      var month = d[1]-1;
-      var day = d[2];
-      var hour = d[3];
-      var minute = d[4];
-      return new Date(year, month, day, hour, minute).getTime();
-    }else{
-      return str
-    }
-    */
-    return str;
   }
 
   $bookmark = function(url) {
