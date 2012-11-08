@@ -73,7 +73,9 @@
     timerHidePaginationIndicator: setTimeout(function(){},0),
     timerPagination: setTimeout(function(){},0),
     IEDisplayTimer: setTimeout(function(){},0),
+    filterOptionTimer: setTimeout(function(){},0),
     lastVisitedPage: -1,
+    lastTouchedFilterPanel: 0,
     sortStart: -1,
     sortStartIndex: -1,
     sortEnd: -1,
@@ -403,6 +405,7 @@
           
         })
         $('.ggrid-field-filter input').bind('click' , {_this:this}, this._filterOptionClickEvent);
+        $('.ggrid-field-filter button').bind('click' , {_this:this}, this._filterConditionEvent);
       }
     },
     _installFieldIndicator: function(field, type){
@@ -442,14 +445,18 @@
       var _this = event.data._this;
       var container = $(_this.options.container);
       var filter = container.find('.ggrid-field-filter').show();
-      filter.parent().find('.ggrid-field-indicator-filtering');
+      clearTimeout(_this.filterOptionTimer);
+      //filter.parent().find('.ggrid-field-indicator-filtering');
 
     },
     _fieldFilterMouseOutEvent: function(event){
       var _this = event.data._this;
       var container = $(_this.options.container);
-      var filter = container.find('.ggrid-field-filter').hide();
-      filter.parent().find('.ggrid-field-indicator-filtering');
+      _this.filterOptionTimer = setTimeout(function(){
+        container.find('.zxgrid-field-filter').hide();
+      }, 0);
+      //var filter = container.find('.ggrid-field-filter').hide();
+      //filter.parent().find('.ggrid-field-indicator-filtering');
 
     },
     _fieldMouseOverEvent: function(event){
@@ -499,6 +506,21 @@
         _this.resize();
       }
     },
+    _filterConditionEvent: function(event){
+      var _this = event.data._this;
+      var filterContainer = $(this).parent().parent();
+      
+      var filterEnabledClass = 'ggrid-field-filter-enabled';
+      var filterDisabledClass = 'ggrid-field-filter-disabled';
+
+      filterContainer.parent().find('.ggrid-field-indicator-filtering').removeClass(filterDisabledClass).addClass(filterEnabledClass);
+      
+      var data = _this.options.dataSourceBackup;
+      var query = _this._getDataFromCombinedCondition(data);
+      _this.options.dataSource = query.result;
+      _this.reloadDataOnly();
+      _this.resize();
+    },
     _filterOptionClickEvent: function(event){
       var _this = event.data._this;
       var filterContainer = $(this).parent().parent().parent().parent();
@@ -532,20 +554,45 @@
     _getDataFromCombinedCondition: function(data){
       var container = $(this.options.container);
       var order = container.find('.ggrid-field-indicator-sorting').map(function(){ var sorting = $(this); var order = sorting.attr('order'); if( $def(order) ){ return sorting.parent().attr('raw') + ' ' + order } }).get();
-      var filters = container.find('.ggrid-field-filter');
-      var condition = filters.map(function(){
+      var condition = container.find('.ggrid-field-filter').map(function(){
         var filter = $(this);
         var raw = filter.attr('raw');
-        return $(filter).find('input:checked').map(function(){ return raw + '=="'+$(this).val().replace(/^\(Blanks\)$/,'')+'"'}).get().join(' OR ');
+        if($(this).find('.ggrid-field-panel-options').is(':visible')){
+          return $(filter).find('input:checked').map(function(){ return raw + '=="'+$(this).val().replace(/^\(Blanks\)$/,'')+'"'}).get().join(' OR ');
+        }else{
+          var panel = $(this).find('.ggrid-field-panel-condition');
+          var operator = panel.find('select').val();
+          var value = panel.find('input').val().replace(/["']/g, '');
+          switch(operator){
+            case 'equals':
+              if( isNaN(value) ){
+                return raw + ' == "' + value + '"';
+              }else{
+                return raw + ' == ' + value + '';
+              }
+              break;
+            case 'not equals':
+              if( isNaN(value) ){
+                return raw + ' != "' + value + '"';
+              }else{
+                return raw + ' != ' + value + '';
+              }
+              break;
+            case 'contains':
+              return raw + ' LIKE "%' + value + '%"';
+              break;
+            case 'not contains':
+              return raw + ' NOT LIKE "%' + value + '%"';
+              break;
+            default:
+              return raw + ' ' + operator + ' ' + value + '';
+              break;
+          }
+        }
       }).get().join(') AND (');
       condition = '(' + condition + ')';
-      //alert(condition)
-      var query = {};
-      if( filters.size() > 0){
-        query = select('*').from(data).where(condition);
-      }else{
-        query = select('*').from(data);
-      }
+      alert(condition)
+      var query = select('*').from(data).where(condition);
       if(order.length == 1){
         query = query.orderby(order.join(''))
       }
@@ -579,6 +626,7 @@
         
       })
       $('.ggrid-field-filter input').bind('click' , {_this:this}, this._filterOptionClickEvent);
+      $('.ggrid-field-filter button').bind('click' , {_this:this}, this._filterConditionEvent);
       
     },
     _reloadFieldEnhancement: function(){
@@ -611,15 +659,23 @@
           
         })
         $('.ggrid-field-filter input').bind('click' , {_this:this}, this._filterOptionClickEvent);
+        $('.ggrid-field-filter button').bind('click' , {_this:this}, this._filterConditionEvent);
       }
     },
     _installFilterable: function(field, raw, fieldname){
+      var _this = this;
       var fieldFilterability = this.options.fieldFilterability;
       var data = this.options.dataSource;
       if( $.inArray(raw, fieldFilterability) > -1 ){
         this._installFieldIndicator( field, 'filtering' );
         
-        var options = $.map(select(raw).from(data).result, function(res){return res[raw].toString()});
+        var options = $.map(select(raw).from(data).result, function(res){
+              if( typeof res[raw] == 'undefined' ){
+                return 'undefined';
+              }else{
+                return res[raw] == null ? '' : res[raw].toString();
+              }
+            });
             options = $unique(options);
             options.splice(0, 0, '(Blanks)')
         var optionLength = options.length;
@@ -630,6 +686,7 @@
             
         
         var html = [];
+        html.push('<div><nobr>&nbsp;&nbsp;<a href="javascript:void(0)" class="zxgrid-filter-switch" _for="options">Condition...</a></nobr></div>');
         $(options).each(function(index, option){
           html.push('<div><nobr><label><input type="checkbox" style="position:relative; top:2px;" value="'+option+'" checked />'+option+'</label></nobr></div>');
         })
@@ -647,8 +704,30 @@
               top: paddingBottom,
               height: height
             }
-        var panel = $('<div class="ggrid-field-filter '+panelClass+'" raw="'+raw+'"><div style="position:absolute;">'+html+'</div></div>').appendTo(field).css(panelStyle);
         
+        var filterOptions = '<div class="ggrid-field-panel-options" style="display:block">'+html+'</div>';
+        var filterConditionOperators = ['contains','not contains','equals','not equals','&lt;','&lt;=','&gt;=','&gt;'];
+        var filterCondition = '<div class="ggrid-field-panel-condition" style="display:none"><select><option>'+filterConditionOperators.join('</option><option>')+'</option></select><input type="text" /><button>Filter</button><br />&nbsp;<a href="javascript:void(0)" class="ggrid-filter-switch" _for="condition">Options...</a></div>';
+        var panel = $('<div class="ggrid-field-filter '+panelClass+'" raw="'+raw+'">' + filterOptions + filterCondition + '</div>').appendTo(field).css(panelStyle);
+            panel.mouseover(function(){
+              if( _this.lastTouchedFilterPanel ){
+                _this.lastTouchedFilterPanel.css('z-index', '0');
+              }
+              _this.lastTouchedFilterPanel = $(this).css('z-index', 1);
+            })
+            panel.find('.ggrid-filter-switch').click(function(){
+              var target = $(this).attr('_for');
+              if( target == 'options' ){
+                $(this).parent().parent().parent().hide().next().show();
+              }else if( target == 'condition' ){
+                var panel = $(this).parent().hide();
+                panel.prev().show();
+                panel.find('select').val(0);
+                panel.find('input').val('');
+                var checkbox = panel.parent().find('input[type=checkbox]').prop('checked',1).get(0);
+                _this._filterOptionClickEvent.call(checkbox, {data:{_this:_this}})
+              }
+            })
       }
     },
     _reloadField: function(){
